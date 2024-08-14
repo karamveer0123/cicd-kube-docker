@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mynginx
+  namespace: kvns
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      env: prod
+      app: nginx
+  template:
+    metadata:
+      labels:
+        env: prod
+        app: nginx
+    spec:
+      containers:
+        - name: mynginx
+          image: karamveer91/mynginx:v6
+          ports:
+            - containerPort: 80
+
