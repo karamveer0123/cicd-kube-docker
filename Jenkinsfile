@@ -52,7 +52,7 @@ pipeline {
         }
 
         stage('Check Kubernetes Status') {
-            agent {label 'KOPS'}
+            agent {label 'test'}
               steps {
                 script {
                     echo 'Print the status of the Kubernetes objects'
