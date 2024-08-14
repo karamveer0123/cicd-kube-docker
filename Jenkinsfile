@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     echo 'Delete the docker image from workspace'
-                    sh "docker rmi -f $(docker images -aq)"
+                    sh 'docker rmi -f $(docker images -aq)'
                 }
             }
         }
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     echo 'Create manifest in Kubernetes'
-                    sh "kubectl create -f nginx-deployment.yaml"
+                    sh 'kubectl create -f nginx-deployment.yaml'
                 }
             }
         }
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     echo 'Print the status of the Kubernetes objects'
-                    sh "kubectl get all -n kvns"
+                    sh 'kubectl get all -n kvns'
                 }
             }
         }
@@ -75,4 +75,5 @@ pipeline {
         }
     }
 }
+
 
