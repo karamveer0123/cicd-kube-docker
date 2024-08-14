@@ -42,7 +42,8 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps {
+            agent {label 'test'}
+              steps {
                 script {
                     echo 'Create manifest in Kubernetes'
                     sh 'kubectl create -f nginx-deployment.yaml'
@@ -51,7 +52,8 @@ pipeline {
         }
 
         stage('Check Kubernetes Status') {
-            steps {
+            agent {label 'KOPS'}
+              steps {
                 script {
                     echo 'Print the status of the Kubernetes objects'
                     sh 'kubectl get all -n kvns'
