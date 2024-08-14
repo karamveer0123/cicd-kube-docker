@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     echo 'Delete the docker image from workspace'
-                    sh 'docker rmi -f $(docker images -aq)'
+                    //sh 'docker rmi -f $(docker images -aq)'
                 }
             }
         }
