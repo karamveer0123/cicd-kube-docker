@@ -45,7 +45,7 @@ pipeline {
                 script {
                     echo 'Update kubernetes mainifest with latest docker Image'
                     sh """
-                        sed -i 's#DOCKER_IMAGE#${DOCKER_IMAGE}#g' nginx-deployment.yaml
+                        sed -i 's/DOCKER_IMAGE/${DOCKER_IMAGE}/g' nginx-deployment.yaml
                        """
                 }
             }
@@ -56,7 +56,6 @@ pipeline {
               steps {
                 script {
                     echo 'Create manifest in Kubernetes'
-                    sh 'sed -i '
                     sh 'kubectl create -f nginx-deployment.yaml'
                 }
             }
