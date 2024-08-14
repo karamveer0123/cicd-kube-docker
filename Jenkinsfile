@@ -40,12 +40,23 @@ pipeline {
                 }
             }
         }
+        stage('update kubernetes manifest') {
+            steps {
+                script {
+                    echo 'Update kubernetes mainifest with latest docker Image'
+                    sh """
+                        sed -i "s|DOCKER_IMAGE|${DOCKER_IMAGE}|g" nginx-deployment.yaml
+
+                }
+            }
+        }
 
         stage('Deploy to Kubernetes') {
             agent {label 'test'}
               steps {
                 script {
                     echo 'Create manifest in Kubernetes'
+                    sh 'sed -i '
                     sh 'kubectl create -f nginx-deployment.yaml'
                 }
             }
