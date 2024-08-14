@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mynginx
-          image: karamveer91/mynginx:v6
+          image: ${DOCKER_IMAGE}
           ports:
             - containerPort: 80
       imagePullSecrets:
