@@ -18,6 +18,8 @@ spec:
       containers:
         - name: mynginx
           image: karamveer91/mynginx:v6
+          imagePullSecrets:
+            - name: dockerpasswd
           ports:
             - containerPort: 80
 
