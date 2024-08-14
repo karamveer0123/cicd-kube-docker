@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "karamveer91/mynginx:v${BUILD_NUMBER}"
         DOCKER_CREDENTIALS_ID = 'dockerhubcred' // Replace with your Docker credentials ID
-        KUBECONFIG = credentials('kubeconfig') // Optional, if you need to set up Kubernetes credentials
+        //KUBECONFIG = credentials('kubeconfig') // Optional, if you need to set up Kubernetes credentials
     }
 
     stages {
