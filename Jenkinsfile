@@ -41,7 +41,8 @@ pipeline {
             }
         }
         stage('update kubernetes manifest') {
-            steps {
+            agent {label 'test'}
+              steps {
                 script {
                     echo 'Update kubernetes mainifest with latest docker Image'
                     sh """
