@@ -46,6 +46,7 @@ pipeline {
                     echo 'Update kubernetes mainifest with latest docker Image'
                     sh """
                         sed -i "s|DOCKER_IMAGE|${DOCKER_IMAGE}|g" nginx-deployment.yaml
+                       """
 
                 }
             }
