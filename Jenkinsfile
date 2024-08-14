@@ -2,26 +2,18 @@ pipeline {
     agent any
 
     environment {
-        // Define your Docker registry and Kubernetes configurations
-        DOCKER_REGISTRY = 'https://hub.docker.com/'
-        IMAGE_NAME = 'karamveer91/mynginx'
-        IMAGE_TAG = 'v3'
-        KUBE_CONFIG = '/path/to/your/kubeconfig'  // Path to your kubeconfig file in Jenkins workspace or environment variable
-        KUBE_NAMESPACE = 'kvns'  // Kubernetes namespace to deploy to
+        DOCKER_IMAGE = "karamveer91/mynginx:v${BUILD_NUMBER}"
+        DOCKER_CREDENTIALS_ID = 'dockerhubcred' // Replace with your Docker credentials ID
+        KUBECONFIG = credentials('kubeconfig') // Optional, if you need to set up Kubernetes credentials
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                // Checkout your source code repository
-                checkout scm
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}")
+                    echo 'Building Docker Image'
+                    sh "docker build -t ${DOCKER_IMAGE} --no-cache ."
+                    echo 'Build image done'
                 }
             }
         }
@@ -29,9 +21,22 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://hub.docker.com/', 'dockerhubcred') {
-                        docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}").push()
+                    echo 'Pushing Image to Docker Hub'
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh """
+                            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                            docker push ${DOCKER_IMAGE}
+                        """
                     }
+                }
+            }
+        }
+
+        stage('Clean Up Docker Images') {
+            steps {
+                script {
+                    echo 'Delete the docker image from workspace'
+                    sh "docker rmi -f $(docker images -aq)"
                 }
             }
         }
@@ -39,19 +44,34 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Use kubectl to apply the Kubernetes deployment
-                    sh "kubectl --kubeconfig=${KUBE_CONFIG} -n ${KUBE_NAMESPACE} apply -f k8s/deployment.yaml"
+                    echo 'Create manifest in Kubernetes'
+                    sh "kubectl create -f nginx-deployment.yaml"
+                }
+            }
+        }
+
+        stage('Check Kubernetes Status') {
+            steps {
+                script {
+                    echo 'Print the status of the Kubernetes objects'
+                    sh "kubectl get all -n kvns"
                 }
             }
         }
     }
 
     post {
-        success {
-            echo 'Deployment succeeded!'
+        always {
+            echo 'Cleaning up...'
+            // Any cleanup steps go here
         }
+
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+
         failure {
-            echo 'Deployment failed.'
+            echo 'Pipeline failed.'
         }
     }
 }
